@@ -1,0 +1,43 @@
+schemaVersion: v0.2
+prepare:
+  steps:
+    - name: Install uv
+      command: curl -LsSf https://astral.sh/uv/install.sh | env
+        UV_INSTALL_DIR="$HOME/app" sh && chmod +x $HOME/app/uv
+    - name: init backend venv
+      command: cd backend && $HOME/app/uv venv
+    - name: Install backend requirements
+      command: cd backend && $HOME/app/uv pip install -r requirements.txt
+    - name: init frontend venv
+      command: cd frontend && $HOME/app/uv venv
+    - name: Install frontend requirements
+      command: cd frontend && $HOME/app/uv pip install -r requirements.txt
+test:
+  steps: []
+run:
+  backend:
+    steps:
+      - name: Run service
+        command: cd backend && $HOME/app/uv run app.py
+    plan: 8
+    replicas: 1
+    network:
+      ports:
+        - port: 3000
+          isPublic: false
+      paths:
+        - port: 3000
+          path: /api
+  frontend:
+    steps:
+      - name: Run frontend
+        command: cd frontend && $HOME/app/uv run app.py
+    plan: 8
+    replicas: 1
+    network:
+      ports:
+        - port: 3000
+          isPublic: false
+      paths:
+        - port: 3000
+          path: /

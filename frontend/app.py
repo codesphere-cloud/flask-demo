@@ -8,7 +8,7 @@ app = Flask(__name__)
 # and the resulting Kubernetes Service name
 BACKEND_SERVICE_HOST = os.environ.get('BACKEND_HOST', 'backend')
 BACKEND_SERVICE_PORT = os.environ.get('BACKEND_PORT', '3000')
-BACKEND_URL = f"http://{BACKEND_SERVICE_HOST}:{BACKEND_SERVICE_PORT}"
+BACKEND_URL = os.environ.get('BACKEND_URL', f"http://{BACKEND_SERVICE_HOST}:{BACKEND_SERVICE_PORT}/api")
 
 # Simple HTML template for the frontend
 HTML_TEMPLATE = """
@@ -30,6 +30,7 @@ HTML_TEMPLATE = """
 
 @app.route('/')
 def index():
+    backend_message = "Backend is currently unreachable (Service Discovery or Pod issue)."
     try:
         # Attempt to reach the backend service
         response = requests.get(BACKEND_URL, timeout=1)
@@ -38,9 +39,9 @@ def index():
     except requests.exceptions.RequestException as e:
         # Fallback message if the backend is not available
         print(f"Error connecting to backend: {e}")
-        backend_message = "Backend is currently unreachable (Service Discovery or Pod issue)."
         
     return render_template_string(HTML_TEMPLATE, backend_message=backend_message)
 
 if __name__ == '__main__':
+    print(BACKEND_URL)
     app.run(host='0.0.0.0', port=3000)
