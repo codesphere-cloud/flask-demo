@@ -5,17 +5,18 @@ prepare:
       command: curl -LsSf https://astral.sh/uv/install.sh | env
         UV_INSTALL_DIR="$HOME/app" sh && chmod +x $HOME/app/uv
     - name: init backend venv
-      command: cd backend && $HOME/app/uv venv
+      command: cd backend && $HOME/app/uv venv --python 3.12
     - name: Install backend requirements
       command: cd backend && $HOME/app/uv pip install -r requirements.txt
     - name: init frontend venv
-      command: cd frontend && $HOME/app/uv venv
+      command: cd frontend && $HOME/app/uv venv --python 3.12
     - name: Install frontend requirements
       command: cd frontend && $HOME/app/uv pip install -r requirements.txt
 test:
   steps: []
 run:
   backend:
+    isPublic: true
     steps:
       - name: Run service
         command: cd backend && $HOME/app/uv run app.py
@@ -24,11 +25,13 @@ run:
     network:
       ports:
         - port: 3000
-          isPublic: false
+          isPublic: true
       paths:
         - port: 3000
           path: /api
+          isPublic: true
   frontend:
+    isPublic: true
     steps:
       - name: Run frontend
         command: cd frontend && $HOME/app/uv run app.py
@@ -37,7 +40,8 @@ run:
     network:
       ports:
         - port: 3000
-          isPublic: false
+          isPublic: true
       paths:
         - port: 3000
           path: /
+          isPublic: true
