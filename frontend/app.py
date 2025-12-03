@@ -30,7 +30,7 @@ HTML_TEMPLATE = """
 
 @app.route('/')
 def index():
-    backend_message = "Backend is currently unreachable (Service Discovery or Pod issue)."
+    backend_message = "Backend is currently unreachable."
     try:
         # Attempt to reach the backend service
         response = requests.get(BACKEND_URL, timeout=1)
